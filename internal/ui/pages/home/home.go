@@ -3,7 +3,6 @@ package home
 import (
 	"fmt"
 	"runtime"
-	"time"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -18,19 +17,13 @@ type Home struct {
 	systemInfoView *tview.TextView
 	helpView       *tview.TextView
 	flex           *tview.Flex
-	app            *tview.Application
-	ticker         *time.Ticker
-	stopRefresh    chan bool
-	lastUpdateTime string
 }
 
 // NewHome returns home page view
-func NewHome(app *tview.Application) *Home {
+func NewHome() *Home {
 	home := &Home{
-		Box:         tview.NewBox(),
-		title:       "home",
-		app:         app,
-		stopRefresh: make(chan bool),
+		Box:   tview.NewBox(),
+		title: "home",
 	}
 
 	// Create system info panel
@@ -61,9 +54,6 @@ func NewHome(app *tview.Application) *Home {
 	home.flex = tview.NewFlex().SetDirection(tview.FlexColumn)
 	home.flex.AddItem(home.systemInfoView, 0, 1, false)
 	home.flex.AddItem(home.helpView, 0, 1, false)
-
-	// Start auto-refresh (3 seconds)
-	home.startAutoRefresh()
 
 	return home
 }
@@ -106,10 +96,6 @@ func (h *Home) updateSystemInfo() {
 	valueColor := style.GetColorHex(style.FgColor)
 	highlightColor := style.GetColorHex(style.StatusInstalledColor)
 
-	// Get current time
-	now := time.Now()
-	h.lastUpdateTime = now.Format("2006-01-02 15:04:05")
-
 	// Get memory stats
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
@@ -132,8 +118,6 @@ func (h *Home) updateSystemInfo() {
 
 [%s::b]Application Status:[-::-]
   Status:       [%s]Running[-]
-  Last Update:  [%s]%s[-]
-  Auto Refresh: [%s]3 seconds[-]
 
 [%s::b]Quick Actions:[-::-]
   • Press [%s]F2[-] to open Terminal
@@ -155,8 +139,6 @@ func (h *Home) updateSystemInfo() {
 		valueColor, float64(m.Sys)/1024/1024,
 		valueColor, m.NumGC,
 		headerColor,
-		highlightColor,
-		valueColor, h.lastUpdateTime,
 		highlightColor,
 		headerColor,
 		highlightColor, highlightColor, highlightColor, highlightColor, highlightColor,
@@ -211,9 +193,6 @@ func (h *Home) updateHelp() {
   This tool helps you quickly rebuild
   your development environment after
   system reinstall or setup a new machine.
-
-  Auto-refresh updates system stats
-  every 3 seconds automatically.
 `,
 		headerColor,
 		highlightColor, highlightColor, highlightColor, highlightColor, highlightColor,
@@ -230,33 +209,6 @@ func (h *Home) updateHelp() {
 	)
 
 	fmt.Fprint(h.helpView, help)
-}
-
-// startAutoRefresh starts the auto-refresh timer
-func (h *Home) startAutoRefresh() {
-	h.ticker = time.NewTicker(3 * time.Second)
-
-	go func() {
-		for {
-			select {
-			case <-h.ticker.C:
-				h.updateSystemInfo()
-				if h.app != nil {
-					h.app.Draw()
-				}
-			case <-h.stopRefresh:
-				return
-			}
-		}
-	}()
-}
-
-// StopAutoRefresh stops the auto-refresh timer
-func (h *Home) StopAutoRefresh() {
-	if h.ticker != nil {
-		h.ticker.Stop()
-		h.stopRefresh <- true
-	}
 }
 
 // InputHandler returns the input handler for this primitive
