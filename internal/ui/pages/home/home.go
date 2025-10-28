@@ -101,7 +101,8 @@ func (h *Home) updateSystemInfo() {
 	runtime.ReadMemStats(&m)
 
 	info := fmt.Sprintf(`
-[%s::b]GoCmder - Developer Environment Setup Tool[-::-]
+[%s::b]GoCmder - Developer Environment Setup Tool v0.2.0[-::-]
+[%s]GitHub: https://github.com/shangyanjin/gocmder[-]
 
 [%s::b]System Information:[-::-]
   OS:           [%s]%s[-]
@@ -127,6 +128,7 @@ func (h *Home) updateSystemInfo() {
   • Press [%s]F8[-] to view detailed System Information
 `,
 		headerColor,
+		valueColor,
 		headerColor,
 		valueColor, runtime.GOOS,
 		valueColor, runtime.GOARCH,
