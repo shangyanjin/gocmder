@@ -1,6 +1,6 @@
 # gocmder
 
-GoCmder is a cross-platform terminal UI application for developers to rebuild their environment after system reinstall. It provides an interactive dashboard for installing Git, VSCode, Go, Node, PgSQL, MySQL, Redis, and configuring system settings.
+GoCmder — Fast & automated installer and expert system setup for developers. Installs tools (e.g. Git, VSCode, Go, Node, PgSQL, MySQL, Redis) with built-in visual DB manager, file explorer, and text editor. Supports Windows, Linux, and macOS.
 
 ## Screenshots
 
