@@ -8,7 +8,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/shangyanjin/gocmder/internal/db"
-	"github.com/shangyanjin/gocmder/internal/ui/dialogs"
+	"github.com/shangyanjin/gocmder/internal/ui/components/dialogs"
 	"github.com/shangyanjin/gocmder/internal/ui/style"
 )
 

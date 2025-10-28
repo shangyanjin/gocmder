@@ -8,6 +8,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **ESC Key Navigation** - Global ESC key handler for returning to Home page from all pages
+- **Database Connection Dialog Enhancements**
+  - Session Name field for saving connection configurations
+  - Database Type as editable input field (previously dropdown)
+  - Keyboard shortcuts: ALT+M (MySQL), ALT+P (PostgreSQL), ALT+L (SQLite), ALT+S (Save), ALT+C (Connect)
+  - Compact layout with configurable dialog size (80x20)
+  - Consistent help bar styling with main window
+- **UI Directory Restructuring**
+  - `components/` directory for reusable UI components
+  - `pages/` directory for application pages
+  - Better organized codebase structure
+
+### Fixed
+- **Dialog Focus Issues** - All dialogs now properly restore focus after closing
+  - Connection Dialog ESC key now works correctly
+  - Error/Confirm/Message dialogs restore focus to parent page
+  - HasFocus() methods check display state to prevent ghost focus
+  - ALT+S save without closing dialog (keeps dialog open for quick testing)
+  - ALT+C connects and closes dialog
+  - Ctrl+N works correctly after dialog closes
+
+### Changed
+- **UI Package Structure** - Reorganized into `components/` and `pages/` directories
+  - Moved all dialogs to `internal/ui/components/dialogs/`
+  - Moved all pages to `internal/ui/pages/` (database, home, settings, system, terminal, tools)
+  - Updated all import paths accordingly
+- **Connection Dialog Behavior**
+  - Session Name moved to first field position
+  - ALT+S saves without closing (for quick testing)
+  - ALT+C connects and closes
+  - Connect button closes dialog after connecting
 - **Linux Kernel Configuration Style UI** (`internal/ui/dashboard.go`)
   - Two-panel layout (left: schemes, right: details) for better organization
   - Predefined installation schemes: Minimal, Go Developer, Node Developer, Backend, Full Stack, Custom, Personal Settings

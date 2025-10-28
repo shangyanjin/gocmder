@@ -6,8 +6,8 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/shangyanjin/gocmder/internal/ui/pages/terminal/vterm"
 	"github.com/shangyanjin/gocmder/internal/ui/style"
-	"github.com/shangyanjin/gocmder/internal/ui/terminal/vterm"
 )
 
 // Terminal implements the terminal page primitive
@@ -93,4 +93,3 @@ func (t *Terminal) Draw(screen tcell.Screen) {
 	t.vtermDialog.SetRect(x, y+1, width, height-1)
 	t.vtermDialog.Draw(screen)
 }
-
