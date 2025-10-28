@@ -2,15 +2,22 @@
 
 GoCmder is a cross-platform terminal UI application for developers to rebuild their environment after system reinstall. It provides an interactive dashboard for installing Git, VSCode, Go, Node, PgSQL, MySQL, Redis, and configuring system settings.
 
+## Screenshots
+
+![GoCmder Main Dashboard](docs/screenshot/main-dashboard.jpg)
+
+*Main dashboard showing system information and help panel*
+
 ## Features
 
-- **Interactive TUI Dashboard**: Terminal-based user interface with real-time system information
-- **Developer Tools Installation**: One-click installation of development tools
+- **Interactive TUI Dashboard**: Terminal-based user interface with system information and help panel
+- **Developer Tools Installation**: One-click installation of development tools (Git, VSCode, Go, Node.js, PostgreSQL, MySQL, Redis)
+- **Database Management**: Connect to databases, execute SQL queries, browse tables
 - **System Configuration**: Automated PATH setup, power settings, and personal folders
 - **Multi-platform Support**: Windows (primary), macOS and Linux (planned)
-- **Scheme-based Setup**: Predefined installation schemes for different development scenarios
-- **Custom Configuration**: Fine-grained control over tools and settings
-- **Real-time System Info**: CPU, memory, and system information display
+- **ESC Key Navigation**: Global ESC key to return to home page from any page
+- **Keyboard Shortcuts**: Comprehensive shortcut support for efficient navigation
+- **Real-time System Info**: CPU, memory, and runtime statistics display
 
 ## Components
 
@@ -18,12 +25,14 @@ GoCmder is a cross-platform terminal UI application for developers to rebuild th
 
 The main interactive application with TUI interface:
 
-- Dashboard-style terminal UI using tview
-- Real-time system information
-- Interactive tool selection with checkboxes
-- Multi-panel layout with navigation support
-- Automatic installer downloads
-- Logging and error handling
+- **System Dashboard**: Real-time system information and runtime statistics
+- **Help Panel**: Comprehensive keyboard shortcuts and usage guide
+- **Multi-page Navigation**: F1-F9 function keys for page switching
+- **Database Manager**: Connection dialogs with preset shortcuts (ALT+M/P/L/S/C)
+- **Development Tools**: Interactive tool installation interface
+- **System Settings**: Configuration management with PATH and power settings
+- **ESC Navigation**: Global ESC key to return to home page
+- **Logging System**: Comprehensive logging with file output
 
 ### 2. Shell Scripts (`/scripts`)
 
@@ -75,7 +84,30 @@ go build -o gocmder .
 
 ## Usage
 
-Choose your preferred method:
+### Keyboard Navigation
+
+**Function Keys:**
+- `F1` - Home (System Dashboard)
+- `F2` - Terminal
+- `F4` - Database Manager
+- `F6` - Development Tools
+- `F7` - System Settings
+- `F8` - System Information
+
+**Global Shortcuts:**
+- `ESC` - Return to Home page
+- `Tab` - Cycle through pages
+- `q` - Quit application
+
+**Database Manager Shortcuts:**
+- `Ctrl+N` - New connection
+- `ALT+M` - MySQL preset
+- `ALT+P` - PostgreSQL preset
+- `ALT+L` - SQLite preset
+- `ALT+S` - Save connection
+- `ALT+C` - Connect & close
+
+### Choose your preferred method:
 
 **Option 1: Shell Scripts (Quick)**
 - Windows: `scripts/win/Set-PersonalFolders.ps1`
@@ -99,11 +131,25 @@ gocmder/
 │   ├── models/               # Data models
 │   ├── setup/                # Setup utilities
 │   └── ui/                   # User interface components
+│       ├── uiapp.go          # Main UI application
+│       ├── components/       # Reusable UI components
+│       │   └── dialogs/      # Dialog components
+│       ├── pages/            # Application pages
+│       │   ├── home/         # System dashboard
+│       │   ├── database/     # Database manager
+│       │   ├── terminal/     # Terminal emulator
+│       │   ├── tools/        # Development tools
+│       │   ├── settings/     # System settings
+│       │   └── system/       # System information
+│       ├── style/            # UI styling
+│       └── utils/            # UI utilities
 ├── scripts/                   # Shell/PowerShell scripts
 │   ├── win/                  # Windows scripts
 │   ├── macos/                # macOS scripts
 │   └── linux/                # Linux scripts
 ├── docs/                      # Documentation
+│   ├── screenshot/           # Application screenshots
+│   └── CHANGELOG.md          # Version history
 ├── downloads/                 # Installer downloads
 ├── backups/                  # User backups
 ├── logs/                      # Application logs
@@ -129,7 +175,9 @@ gocmder/
 ## Documentation
 
 - [CHANGELOG](docs/CHANGELOG.md) - Version history and development notes
-- [UI Layout](docs/UI_LAYOUT.md) - User interface documentation
+- [UI Architecture](docs/UI_ARCHITECTURE.md) - User interface architecture documentation
+- [UI Structure](docs/UI_STRUCTURE.md) - User interface structure documentation
+- [Screenshots](docs/screenshot/) - Application screenshots
 - [Shell Scripts](scripts/) - Traditional automation scripts
 
 ## Author
