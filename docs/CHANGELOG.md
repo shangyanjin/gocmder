@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **ESC Key Navigation** - Global ESC key handler for returning to Home page from all pages
+- **Home Page Dashboard Redesign**
+  - System information panel (left 2/3 width) with CPU, memory, goroutines stats
+  - Help & quick reference panel (right 1/3 width) with all keyboard shortcuts
+  - Application metadata: Version 0.2.0, GitHub link, project description
+  - Single-line About text with auto-wrapping for better display
+  - Real-time system statistics display
 - **Database Connection Dialog Enhancements**
   - Session Name field for saving connection configurations
   - Database Type as editable input field (previously dropdown)
@@ -19,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `components/` directory for reusable UI components
   - `pages/` directory for application pages
   - Better organized codebase structure
+  - `internal/ui/uiapp.go` - Main UI application file (renamed from app.go)
 
 ### Fixed
 - **Dialog Focus Issues** - All dialogs now properly restore focus after closing
@@ -28,6 +35,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ALT+S save without closing dialog (keeps dialog open for quick testing)
   - ALT+C connects and closes dialog
   - Ctrl+N works correctly after dialog closes
+- **Home Page Display** - Fixed text alignment and formatting
+  - Proper alignment for system information fields
+  - Auto-wrapping for long text without manual line breaks
+  - Cleaned up formatting for better visual presentation
+
+### Removed
+- **Auto-refresh Timer** - Removed automatic 3-second refresh from home page
+  - System statistics now display once on page load
+  - Reduces unnecessary periodic updates
+  - Simplifies threading and event handling
 
 ### Changed
 - **UI Package Structure** - Reorganized into `components/` and `pages/` directories
