@@ -23,6 +23,12 @@ func NewInstallConfig() *InstallConfig {
 	// Initialize predefined schemes
 	config.Schemes = []Scheme{
 		{
+			Name:           "Help",
+			Description:    "Show help and keyboard shortcuts",
+			ToolIndices:    []int{},
+			SettingIndices: []int{},
+		},
+		{
 			Name:           "Minimal",
 			Description:    "Basic tools: Git, VSCode",
 			ToolIndices:    []int{ToolGit, ToolVSCode},

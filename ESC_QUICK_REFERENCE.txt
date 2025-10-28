@@ -1,0 +1,79 @@
+╔═══════════════════════════════════════════════════════════════════════╗
+║                    GoCmder - ESC Key Navigation                       ║
+║                         Quick Reference Card                          ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+┌───────────────────────────────────────────────────────────────────────┐
+│ ESC KEY BEHAVIOR                                                      │
+├───────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  • From any page (except Home) → Returns to Home page                │
+│  • On Home page                → Does nothing (safe)                 │
+│  • With dialog open            → Closes dialog only                  │
+│                                                                       │
+│  IMPORTANT: ESC never exits the application!                         │
+│             Use 'q' to quit GoCmder.                                 │
+│                                                                       │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────┐
+│ NAVIGATION SHORTCUTS                                                  │
+├───────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  F1  → Home page (Dashboard)                                         │
+│  F2  → Terminal page                                                 │
+│  F4  → Database Management                                           │
+│  F6  → Development Tools                                             │
+│  F7  → System Settings                                               │
+│  F8  → System Information                                            │
+│                                                                       │
+│  Tab → Cycle through pages                                           │
+│  ESC → Return to Home (from any page)                                │
+│  q   → Quit application                                              │
+│                                                                       │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────┐
+│ USAGE EXAMPLES                                                        │
+├───────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  Example 1: Quick return from any page                               │
+│    Home → F6 (Tools) → ESC → Back to Home                            │
+│                                                                       │
+│  Example 2: Working with dialogs                                     │
+│    Home → F4 (Database) → Ctrl+N (Connect Dialog)                    │
+│          → ESC (Close Dialog) → ESC → Back to Home                   │
+│                                                                       │
+│  Example 3: Exploring pages safely                                   │
+│    Home → F2 (Terminal) → F6 (Tools) → F7 (Settings)                 │
+│          → ESC → Always back to Home                                 │
+│                                                                       │
+└───────────────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────────────┐
+│ VISUAL FEEDBACK                                                       │
+├───────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  Look at the bottom help bar:                                        │
+│                                                                       │
+│  On Home page:    No "ESC Home" shown                                │
+│  On other pages:  "ESC Home" visible in help bar                     │
+│                                                                       │
+└───────────────────────────────────────────────────────────────────────┘
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║                              SUMMARY                                  ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║                                                                       ║
+║  ✓ ESC returns to Home from all pages                                ║
+║  ✓ ESC never exits the application                                   ║
+║  ✓ ESC closes dialogs first (if open)                                ║
+║  ✓ Visual feedback in help bar                                       ║
+║  ✓ Use 'q' to quit when needed                                       ║
+║                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+Version: 2025-10-27
+Implementation: internal/ui/app.go
+Documentation: docs/ESC_KEY_NAVIGATION.md, docs/ESC键导航说明.md
+
