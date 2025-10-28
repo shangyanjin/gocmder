@@ -398,3 +398,11 @@
 [2025-10-28 16:28:54] INFO: Application setup completed
 [2025-10-28 16:28:54] INFO: Application started
 [2025-10-28 16:30:07] INFO: Application shutdown normally
+[2025-10-28 16:30:15] INFO: Application instance created
+[2025-10-28 16:30:15] INFO: Configuration initialized
+[2025-10-28 16:30:15] INFO: Application startup
+[2025-10-28 16:30:15] INFO: Application setup started
+[2025-10-28 16:30:15] INFO: Creating UI
+[2025-10-28 16:30:15] INFO: UI created successfully
+[2025-10-28 16:30:15] INFO: Application setup completed
+[2025-10-28 16:30:15] INFO: Application started
