@@ -3,6 +3,7 @@ package home
 import (
 	"fmt"
 	"runtime"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -13,128 +14,56 @@ import (
 type Home struct {
 	*tview.Box
 
-	title    string
-	textView *tview.TextView
-	flex     *tview.Flex
+	title          string
+	systemInfoView *tview.TextView
+	helpView       *tview.TextView
+	flex           *tview.Flex
+	app            *tview.Application
+	ticker         *time.Ticker
+	stopRefresh    chan bool
+	lastUpdateTime string
 }
 
 // NewHome returns home page view
-func NewHome() *Home {
+func NewHome(app *tview.Application) *Home {
 	home := &Home{
-		Box:   tview.NewBox(),
-		title: "home",
+		Box:         tview.NewBox(),
+		title:       "home",
+		app:         app,
+		stopRefresh: make(chan bool),
 	}
 
-	// Create text view for welcome content
-	home.textView = tview.NewTextView()
-	home.textView.SetDynamicColors(true)
-	home.textView.SetBackgroundColor(style.BgColor)
-	home.textView.SetTextColor(style.FgColor)
-	home.textView.SetBorder(false)
+	// Create system info panel
+	home.systemInfoView = tview.NewTextView()
+	home.systemInfoView.SetDynamicColors(true)
+	home.systemInfoView.SetBackgroundColor(style.BgColor)
+	home.systemInfoView.SetTextColor(style.FgColor)
+	home.systemInfoView.SetBorder(true)
+	home.systemInfoView.SetBorderColor(style.BorderColor)
+	home.systemInfoView.SetTitle(" System Dashboard ")
+	home.systemInfoView.SetScrollable(true)
 
-	// Create welcome panel
-	welcomePanel := tview.NewTextView()
-	welcomePanel.SetDynamicColors(true)
-	welcomePanel.SetBackgroundColor(style.BgColor)
-	welcomePanel.SetTextColor(style.FgColor)
-	welcomePanel.SetBorder(true)
-	welcomePanel.SetBorderColor(style.BorderColor)
-	welcomePanel.SetTitle(" Welcome to GoCmder ")
+	// Create help panel
+	home.helpView = tview.NewTextView()
+	home.helpView.SetDynamicColors(true)
+	home.helpView.SetBackgroundColor(style.BgColor)
+	home.helpView.SetTextColor(style.FgColor)
+	home.helpView.SetBorder(true)
+	home.helpView.SetBorderColor(style.BorderColor)
+	home.helpView.SetTitle(" Help & Quick Reference ")
+	home.helpView.SetScrollable(true)
 
-	// Create quick actions panel
-	actionsPanel := tview.NewTextView()
-	actionsPanel.SetDynamicColors(true)
-	actionsPanel.SetBackgroundColor(style.BgColor)
-	actionsPanel.SetTextColor(style.FgColor)
-	actionsPanel.SetBorder(true)
-	actionsPanel.SetBorderColor(style.BorderColor)
-	actionsPanel.SetTitle(" Quick Actions ")
+	// Update initial content
+	home.updateSystemInfo()
+	home.updateHelp()
 
-	// Create keyboard shortcuts panel
-	shortcutsPanel := tview.NewTextView()
-	shortcutsPanel.SetDynamicColors(true)
-	shortcutsPanel.SetBackgroundColor(style.BgColor)
-	shortcutsPanel.SetTextColor(style.FgColor)
-	shortcutsPanel.SetBorder(true)
-	shortcutsPanel.SetBorderColor(style.BorderColor)
-	shortcutsPanel.SetTitle(" Function Keys ")
-
-	// Fill content
-	highlightColor := style.GetColorHex(style.StatusInstalledColor)
-	titleColor := style.GetColorHex(style.PageHeaderFgColor)
-
-	welcomeText := fmt.Sprintf(`
-[%s::b]GoCmder - Developer Environment Setup Tool[-::-]
-
-Platform: [%s]%s/%s[-]
-Go Version: [%s]%s[-]
-
-This tool helps you quickly rebuild your development 
-environment after system reinstall or setup a new machine.
-
-Navigate through different pages using function keys (F1-F9)
-or use the Tab key to cycle through pages.
-`,
-		titleColor,
-		highlightColor, runtime.GOOS, runtime.GOARCH,
-		highlightColor, runtime.Version(),
-	)
-
-	actionsText := fmt.Sprintf(`
-[%s]F2[-] Terminal
-    Embedded terminal for command execution
-
-[%s]F4[-] Database Manager
-    Connect to MySQL/PostgreSQL, execute SQL,
-    browse tables and view results
-
-[%s]F6[-] Development Tools
-    Install Git, VSCode, Go, Node.js, PostgreSQL,
-    MySQL, Redis and other development tools
-
-[%s]F7[-] System Settings
-    Configure PATH, power settings, user directories
-
-[%s]F8[-] System Information
-    View system information and capabilities
-`,
-		highlightColor, highlightColor, highlightColor, highlightColor, highlightColor,
-	)
-
-	shortcutsText := fmt.Sprintf(`
-[%s]F1[-]     Home (this page)
-[%s]F2[-]     Terminal
-[%s]F3[-]     Reserved (File Manager)
-[%s]F4[-]     Database Manager
-[%s]F5[-]     Reserved (Editor)
-[%s]F6[-]     Development Tools
-[%s]F7[-]     System Settings
-[%s]F8[-]     System Information
-[%s]F9[-]     Reserved
-
-[%s]Tab[-]    Cycle through pages
-[%s]q[-]      Quit application
-`,
-		highlightColor, highlightColor, highlightColor, highlightColor,
-		highlightColor, highlightColor, highlightColor, highlightColor,
-		highlightColor, highlightColor, highlightColor,
-	)
-
-	fmt.Fprint(welcomePanel, welcomeText)
-	fmt.Fprint(actionsPanel, actionsText)
-	fmt.Fprint(shortcutsPanel, shortcutsText)
-
-	// Create layout
-	leftPanel := tview.NewFlex().SetDirection(tview.FlexRow)
-	leftPanel.AddItem(welcomePanel, 0, 1, false)
-
-	rightPanel := tview.NewFlex().SetDirection(tview.FlexRow)
-	rightPanel.AddItem(actionsPanel, 0, 1, false)
-	rightPanel.AddItem(shortcutsPanel, 13, 0, false)
-
+	// Create layout - left: system info, right: help
 	home.flex = tview.NewFlex().SetDirection(tview.FlexColumn)
-	home.flex.AddItem(leftPanel, 0, 1, false)
-	home.flex.AddItem(rightPanel, 0, 1, false)
+	home.flex.AddItem(home.systemInfoView, 0, 1, false)
+	home.flex.AddItem(home.helpView, 0, 1, false)
+
+	// Start auto-refresh (3 seconds)
+	home.startAutoRefresh()
 
 	return home
 }
@@ -167,6 +96,167 @@ func (h *Home) HideAllDialogs() {
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus
 func (h *Home) SubDialogHasFocus() bool {
 	return false
+}
+
+// updateSystemInfo updates the system information display
+func (h *Home) updateSystemInfo() {
+	h.systemInfoView.Clear()
+
+	headerColor := style.GetColorHex(style.PageHeaderFgColor)
+	valueColor := style.GetColorHex(style.FgColor)
+	highlightColor := style.GetColorHex(style.StatusInstalledColor)
+
+	// Get current time
+	now := time.Now()
+	h.lastUpdateTime = now.Format("2006-01-02 15:04:05")
+
+	// Get memory stats
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+
+	info := fmt.Sprintf(`
+[%s::b]GoCmder - Developer Environment Setup Tool[-::-]
+
+[%s::b]System Information:[-::-]
+  OS:           [%s]%s[-]
+  Architecture: [%s]%s[-]
+  CPU Cores:    [%s]%d[-]
+  Go Version:   [%s]%s[-]
+
+[%s::b]Runtime Statistics:[-::-]
+  Goroutines:   [%s]%d[-]
+  Memory Alloc: [%s]%.2f MB[-]
+  Total Alloc:  [%s]%.2f MB[-]
+  Sys Memory:   [%s]%.2f MB[-]
+  GC Runs:      [%s]%d[-]
+
+[%s::b]Application Status:[-::-]
+  Status:       [%s]Running[-]
+  Last Update:  [%s]%s[-]
+  Auto Refresh: [%s]3 seconds[-]
+
+[%s::b]Quick Actions:[-::-]
+  • Press [%s]F2[-] to open Terminal
+  • Press [%s]F4[-] to manage Databases
+  • Press [%s]F6[-] to install Development Tools
+  • Press [%s]F7[-] to configure System Settings
+  • Press [%s]F8[-] to view detailed System Information
+`,
+		headerColor,
+		headerColor,
+		valueColor, runtime.GOOS,
+		valueColor, runtime.GOARCH,
+		valueColor, runtime.NumCPU(),
+		valueColor, runtime.Version(),
+		headerColor,
+		valueColor, runtime.NumGoroutine(),
+		valueColor, float64(m.Alloc)/1024/1024,
+		valueColor, float64(m.TotalAlloc)/1024/1024,
+		valueColor, float64(m.Sys)/1024/1024,
+		valueColor, m.NumGC,
+		headerColor,
+		highlightColor,
+		valueColor, h.lastUpdateTime,
+		highlightColor,
+		headerColor,
+		highlightColor, highlightColor, highlightColor, highlightColor, highlightColor,
+	)
+
+	fmt.Fprint(h.systemInfoView, info)
+}
+
+// updateHelp updates the help information display
+func (h *Home) updateHelp() {
+	h.helpView.Clear()
+
+	headerColor := style.GetColorHex(style.PageHeaderFgColor)
+	highlightColor := style.GetColorHex(style.StatusInstalledColor)
+
+	help := fmt.Sprintf(`
+[%s::b]Function Keys:[-::-]
+  [%s]F1[-]     Home (this page)
+  [%s]F2[-]     Terminal - Embedded terminal
+  [%s]F3[-]     Reserved (File Manager)
+  [%s]F4[-]     Database Manager
+  [%s]F5[-]     Reserved (Editor)
+  [%s]F6[-]     Development Tools
+  [%s]F7[-]     System Settings
+  [%s]F8[-]     System Information
+  [%s]F9[-]     Reserved
+
+[%s::b]Global Shortcuts:[-::-]
+  [%s]Tab[-]       Cycle through pages
+  [%s]ESC[-]       Return to Home page
+  [%s]q[-]         Quit application
+
+[%s::b]Database Manager (F4):[-::-]
+  [%s]Ctrl+N[-]    New connection
+  [%s]ALT+M[-]     MySQL preset
+  [%s]ALT+P[-]     PostgreSQL preset
+  [%s]ALT+L[-]     SQLite preset
+  [%s]ALT+S[-]     Save connection
+  [%s]ALT+C[-]     Connect & close
+
+[%s::b]Development Tools (F6):[-::-]
+  [%s]Space[-]     Toggle selection
+  [%s]a[-]         Select all
+  [%s]i[-]         Install selected
+  [%s]r[-]         Refresh list
+
+[%s::b]Settings (F7):[-::-]
+  [%s]Space[-]     Toggle selection
+  [%s]Enter[-]     Apply settings
+
+[%s::b]About:[-::-]
+  This tool helps you quickly rebuild
+  your development environment after
+  system reinstall or setup a new machine.
+
+  Auto-refresh updates system stats
+  every 3 seconds automatically.
+`,
+		headerColor,
+		highlightColor, highlightColor, highlightColor, highlightColor, highlightColor,
+		highlightColor, highlightColor, highlightColor, highlightColor,
+		headerColor,
+		highlightColor, highlightColor, highlightColor,
+		headerColor,
+		highlightColor, highlightColor, highlightColor, highlightColor, highlightColor, highlightColor,
+		headerColor,
+		highlightColor, highlightColor, highlightColor, highlightColor,
+		headerColor,
+		highlightColor, highlightColor,
+		headerColor,
+	)
+
+	fmt.Fprint(h.helpView, help)
+}
+
+// startAutoRefresh starts the auto-refresh timer
+func (h *Home) startAutoRefresh() {
+	h.ticker = time.NewTicker(3 * time.Second)
+
+	go func() {
+		for {
+			select {
+			case <-h.ticker.C:
+				h.updateSystemInfo()
+				if h.app != nil {
+					h.app.Draw()
+				}
+			case <-h.stopRefresh:
+				return
+			}
+		}
+	}()
+}
+
+// StopAutoRefresh stops the auto-refresh timer
+func (h *Home) StopAutoRefresh() {
+	if h.ticker != nil {
+		h.ticker.Stop()
+		h.stopRefresh <- true
+	}
 }
 
 // InputHandler returns the input handler for this primitive

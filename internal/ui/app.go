@@ -69,7 +69,7 @@ func NewApp(tviewApp *tview.Application) *App {
 	}
 
 	// Create pages
-	uiApp.homePage = home.NewHome()
+	uiApp.homePage = home.NewHome(tviewApp)
 	uiApp.terminalPage = terminal.NewTerminal()
 	uiApp.databasePage = database.NewDatabase()
 	uiApp.toolsPage = tools.NewTools()
