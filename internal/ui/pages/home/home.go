@@ -50,9 +50,9 @@ func NewHome() *Home {
 	home.updateSystemInfo()
 	home.updateHelp()
 
-	// Create layout - left: system info, right: help
+	// Create layout - left: 2/3 for system info, right: 1/3 for help
 	home.flex = tview.NewFlex().SetDirection(tview.FlexColumn)
-	home.flex.AddItem(home.systemInfoView, 0, 1, false)
+	home.flex.AddItem(home.systemInfoView, 0, 2, false)
 	home.flex.AddItem(home.helpView, 0, 1, false)
 
 	return home
@@ -101,9 +101,11 @@ func (h *Home) updateSystemInfo() {
 	runtime.ReadMemStats(&m)
 
 	info := fmt.Sprintf(`
-[%s::b]GoCmder - Developer Environment Setup Tool v0.2.0[-::-]
-[%s]GitHub: https://github.com/shangyanjin/gocmder[-]
+[%s::b]GoCmder - Developer Environment Setup Tool[-::-]
+Version: [%s]0.2.0[-] | GitHub: [%s]https://github.com/shangyanjin/gocmder[-]
 
+About: [%s]Fast & automated installer and expert system setup for developers[-]
+  
 [%s::b]System Information:[-::-]
   OS:           [%s]%s[-]
   Architecture: [%s]%s[-]
@@ -128,7 +130,8 @@ func (h *Home) updateSystemInfo() {
   • Press [%s]F8[-] to view detailed System Information
 `,
 		headerColor,
-		valueColor,
+		valueColor, valueColor,
+		headerColor,
 		headerColor,
 		valueColor, runtime.GOOS,
 		valueColor, runtime.GOARCH,
@@ -192,9 +195,8 @@ func (h *Home) updateHelp() {
   [%s]Enter[-]     Apply settings
 
 [%s::b]About:[-::-]
-  This tool helps you quickly rebuild
-  your development environment after
-  system reinstall or setup a new machine.
+  Fast & automated installer and expert system
+  setup for developers.
 `,
 		headerColor,
 		highlightColor, highlightColor, highlightColor, highlightColor, highlightColor,
